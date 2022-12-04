@@ -1,7 +1,8 @@
-export default class Excelsion {
+export default class Excelsion extends Error {
 
   constructor() {
-    console.log('constr s');
+    // @todo use enums
+    super('Base Excelsion error');
   }
 
 }
