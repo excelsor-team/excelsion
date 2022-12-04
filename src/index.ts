@@ -6,8 +6,9 @@ import { EmailHasNoDomainException, InvalidEmailException, UserNotFoundException
 // ).toString()
 
 
-throw new UserNotFoundException(
+const a = new UserNotFoundException(
     new InvalidEmailException(
         new EmailHasNoDomainException()
     )
 ).toObject();
+console.log(a)
