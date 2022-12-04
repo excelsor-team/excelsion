@@ -1,19 +1,34 @@
+import { InvalidEmailException } from "./exceptions/UserNotFound";
+
 export class Excelsion extends Error {
   type: ExcelsionType
   originException: any
   message: string
   because: Excelsion[]
 
-  constructor(...type: any[] | ExcelsionType = ExcelsionType.DEFAULT, errorMessage: string = ExcelsionType.DEFAULT, excelsions: Excelsion[] = []) {
-    super(errorMessage);
+  constructor(...args: Excelsion[] | Array<any>) {
 
-    this.type = type;
-    this.originException = this.constructor.name;
-    this.message = errorMessage;
-    this.because = excelsions
+
+    if (!args.length || args.every(el => el instanceof Excelsion)) {
+      super(ExcelsionType.DEFAULT);
+      this.type = ExcelsionType.DEFAULT;
+      this.originException = this.constructor.name;
+      this.message = ExcelsionType.DEFAULT;
+      this.because = args
+    } else {
+      const [type, message, excelsiors] = args;
+      super(message);
+
+      this.type = type ?? ExcelsionType.DEFAULT;
+      this.originException = this.constructor.name;
+      this.message = message ?? ExcelsionType.DEFAULT;
+      this.because = excelsiors ?? []
+    }
+
   }
 
   private format(excelsions: Excelsion[]) {
+    return excelsions
     return excelsions.map(el => el.toString())
   }
 

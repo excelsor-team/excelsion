@@ -1,37 +1,32 @@
 export class Excelsion extends Error {
   originExceptionName: any;
-  type: ExcelsionType | string = ExcelsionType.DEFAULT;
-  // message: string;
-  because: Excelsion[] = [];
+  type: ExcelsionType
+  because: Excelsion[]
 
-  constructor(...args: any[]) {
-    let message: string = ExcelsionType.DEFAULT;
+  constructor(...args: Excelsion[] | Array<any>) {
 
-    let argsAreExcelsions = true;
-    args?.forEach((item, index) => {
-      if (!index && typeof item === 'string') {
-        argsAreExcelsions = false;
-      }
-    });
+    if (!args.length || args.every(el => el instanceof Excelsion)) {
+      super(ExcelsionType.DEFAULT);
 
-    super(message);
-
-    this.originExceptionName = this.constructor.name;
-
-    // this.type = type;
-    
-    if (argsAreExcelsions) {
-      this.because = args as Excelsion[];
+      this.type = ExcelsionType.DEFAULT;
+      this.originExceptionName = this.constructor.name;
+      this.message = ExcelsionType.DEFAULT;
+      this.because = args
     } else {
-      this.message = args[0] as string;
-      this.because = args.slice(1) as Excelsion[];
+      const [type, message, excelsiors] = args;
+      super(message);
+
+      this.type = type ?? ExcelsionType.DEFAULT;
+      this.originExceptionName = this.constructor.name;
+      this.message = message ?? ExcelsionType.DEFAULT;
+      this.because = excelsiors ?? []
     }
+
   }
 
   private format(): any {
-      if (this.because.length) {
+    if (this.because.length) {
       return this.because.map(el => el.toObject());
-      // return this.because.map(el => ({ originExceptionName: el.originExceptionName, because: el.format() }));
     } else {
       return [];
     }

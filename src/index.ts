@@ -7,10 +7,10 @@ import { EmailHasNoDomainException, InvalidEmailException, UserNotFoundException
 
 try {
     throw new UserNotFoundException(
-        new InvalidEmailException(
-            new EmailHasNoDomainException(),
+        new InvalidEmailException(),
+        new EmailHasNoDomainException(
             new EmailHasNoAtException()
-        )
+        ),
     );
 } catch (err: any) {
     console.log(err.toString());
