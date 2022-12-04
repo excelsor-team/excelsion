@@ -1,5 +1,6 @@
-import Excelsion from "./excelsion";
+import { BadEmail, UserNotFound } from "./exceptions";
 
-class MyException extends Excelsion {
-
-}
+throw new UserNotFound(
+    new UserNotFound(),
+    new BadEmail()
+).toString()
