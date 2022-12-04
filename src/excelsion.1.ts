@@ -1,24 +1,10 @@
 export class Excelsion extends Error {
-  type: ExcelsionType | string;
-  originException: any;
-  message: string;
-  because: Excelsion[];
+  type: ExcelsionType
+  originException: any
+  message: string
+  because: Excelsion[]
 
-  constructor(...args: Excelsion[] | string[]) {
-
-    let errorMessage = ExcelsionType.DEFAULT;
-
-    args?.forEach((item, index) => {
-      if (!index && typeof item === 'string') {
-        errorMessage = item;
-      } else {
-        this.because.push(item);
-      }
-    })
-
-    if (args?.[0]) {
-
-    }
+  constructor(...type: any[] | ExcelsionType = ExcelsionType.DEFAULT, errorMessage: string = ExcelsionType.DEFAULT, excelsions: Excelsion[] = []) {
     super(errorMessage);
 
     this.type = type;
@@ -26,10 +12,6 @@ export class Excelsion extends Error {
     this.message = errorMessage;
     this.because = excelsions
   }
-
-  // constructor() {
-
-  // }
 
   private format(excelsions: Excelsion[]) {
     return excelsions.map(el => el.toString())
