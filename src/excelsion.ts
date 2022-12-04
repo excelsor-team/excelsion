@@ -1,38 +1,48 @@
 export class Excelsion extends Error {
-  type: ExcelsionType | string;
-  originException: any;
-  message: string;
-  because: Excelsion[];
+  originExceptionName: any;
+  type: ExcelsionType | string = ExcelsionType.DEFAULT;
+  // message: string;
+  because: Excelsion[] = [];
 
-  constructor(...args: Excelsion[] | string[]) {
+  constructor(...args: any[]) {
+    let message: string = ExcelsionType.DEFAULT;
 
-    let errorMessage = ExcelsionType.DEFAULT;
-
+    let argsAreExcelsions = true;
     args?.forEach((item, index) => {
       if (!index && typeof item === 'string') {
-        errorMessage = item;
-      } else {
-        this.because.push(item);
+        argsAreExcelsions = false;
       }
-    })
+    });
 
-    if (args?.[0]) {
+    super(message);
 
+    this.originExceptionName = this.constructor.name;
+
+    // this.type = type;
+    
+    if (argsAreExcelsions) {
+      this.because = args as Excelsion[];
+    } else {
+      this.message = args[0] as string;
+      this.because = args.slice(1) as Excelsion[];
     }
-    super(errorMessage);
-
-    this.type = type;
-    this.originException = this.constructor.name;
-    this.message = errorMessage;
-    this.because = excelsions
   }
 
-  // constructor() {
+  private format(): any {
+      if (this.because.length) {
+      return this.because.map(el => el.toObject());
+      // return this.because.map(el => ({ originExceptionName: el.originExceptionName, because: el.format() }));
+    } else {
+      return [];
+    }
+  }
 
-  // }
+  private stringifyBecause(): any {
+    let string: string = `${this.originExceptionName}`;
 
-  private format(excelsions: Excelsion[]) {
-    return excelsions.map(el => el.toString())
+    string += this.because.map((item => ` because ${item.stringifyBecause()}`)).join('');
+
+    return string;
   }
 
   public metadata(data: object): void {
@@ -41,10 +51,11 @@ export class Excelsion extends Error {
 
   public toObject() {
     return {
-      type: this.type,
-      originException: this.originException,
+      originException: this.originExceptionName,
       message: this.message,
-      because: this.format(this.because)
+      type: this.type,
+      reasons: this.format(),
+      semanticReasons : this.stringifyBecause(),
     };
   }
 
