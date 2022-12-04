@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Exceptions with excelsion",
   "main": "dist/index.js",
-  "type": "module",
   "scripts": {
     "start": "node dist/index.js",
     "compile": "tsc",
