@@ -1,3 +1,5 @@
+import { ExcelsionKeys, excelsionMessage, ExcelsionType, ExcelsionTypes } from "./types";
+
 export class Excelsion extends Error {
   protected originExceptionName: any;
   protected because: Excelsion[];
@@ -18,7 +20,7 @@ export class Excelsion extends Error {
     }
 
     const tmpMessage = excelsionMessage[this.type as ExcelsionKeys];
-    
+
     return tmpMessage || excelsionMessage[ExcelsionTypes.DEFAULT as ExcelsionKeys];
   }
 
@@ -45,7 +47,7 @@ export class Excelsion extends Error {
     return {
       originException: this.originExceptionName,
       message: this.generateMessage(),
-      type: this.type,
+      type: ExcelsionType[this.type as ExcelsionKeys],
       reasons: this.format(this.because),
       metadata: this.metadataObject,
     };
@@ -57,38 +59,3 @@ export class Excelsion extends Error {
 
 }
 
-type ExcelsionKeys =
-    'DEFAULT'
-  | 'NOT_FOUND'
-  | 'BAD_PARAMETERS'
-  | 'BAD_FORMAT'
-  | 'UNKNOWN'
-;
-
-type TExcelsionKeys = {
-  [key in ExcelsionKeys]: string
-};
-
-export const ExcelsionTypes : TExcelsionKeys = {
-  DEFAULT: 'DEFAULT',
-  NOT_FOUND : 'NOT_FOUND',
-  BAD_PARAMETERS : 'BAD_PARAMETERS',
-  BAD_FORMAT : 'BAD_FORMAT',
-  UNKNOWN : 'UNKNOWN',
-};
-
-const ExcelsionType : TExcelsionKeys = {
-  DEFAULT : 'default',
-  NOT_FOUND : 'not-found',
-  BAD_PARAMETERS : 'bad-parameters',
-  BAD_FORMAT : 'bad-format',
-  UNKNOWN : 'unknown',
-}
-
-const excelsionMessage : TExcelsionKeys = {
-  DEFAULT : 'Default Exception',
-  NOT_FOUND : 'Not found Exception',
-  BAD_PARAMETERS : 'Bad Parameters Exception',
-  BAD_FORMAT : 'Bad Format Exception',
-  UNKNOWN : 'Unknown Exception',
-}
