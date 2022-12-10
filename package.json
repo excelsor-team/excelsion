@@ -1,13 +1,16 @@
 {
   "name": "@excelsor/excelsion",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "Exceptions with excelsion",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "node dist/index.js",
     "compile": "tsc",
     "watch": "ts-node-dev --respawn src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "deploy": "npm publish --access public --foreground-scripts",
+    "prepare": "npm run compile"
   },
   "repository": {
     "type": "git",

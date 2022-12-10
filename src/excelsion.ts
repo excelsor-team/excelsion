@@ -51,6 +51,14 @@ export class Excelsion extends Error {
 }
 
 export enum ExcelsionType {
+  DEFAULT = 'default-error',
+  NOT_FOUND = 'not-found',
+  BAD_PARAMETERS = 'bad-parameters',
+  BAD_FORMAT = 'bad-format',
+  UNKNOWN = 'unknown'
+}
+
+export enum ExcelsionMessage {
   DEFAULT = 'Default Excelsion error',
   NOT_FOUND = 'Not Found',
   BAD_PARAMETERS = 'Bad Parameters',
