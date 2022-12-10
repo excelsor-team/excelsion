@@ -1,25 +1,35 @@
+import { ExcelsionKeys, excelsionMessage, ExcelsionType, ExcelsionTypes } from "./types";
+
 export class Excelsion extends Error {
   protected originExceptionName: any;
-  protected type: ExcelsionType | string = ExcelsionType.DEFAULT;
   protected because: Excelsion[];
   protected metadataObject: object;
+  protected type: ExcelsionKeys | string = ExcelsionTypes.DEFAULT;
 
   constructor(...args: Excelsion[]) {
-
-    super(ExcelsionType.DEFAULT);
+    super();
 
     this.originExceptionName = this.constructor.name;
     this.because = args;
     this.metadataObject = {};
+  }
 
+  private generateMessage() {
+    if (this.message) {
+      return this.message;
+    }
+
+    const tmpMessage = excelsionMessage[this.type as ExcelsionKeys];
+
+    return tmpMessage || excelsionMessage[ExcelsionTypes.DEFAULT as ExcelsionKeys];
   }
 
   private format(because: Excelsion[]): Array<object> {
-    if (!because?.length)
+    if (!because?.length) {
       return [];
+    }
 
     return because.map(el => el.toObject());
-
   }
 
   private setMetadata(metadata: Object) {
@@ -27,7 +37,6 @@ export class Excelsion extends Error {
   }
 
   public metadata(data: object) {
-
     this.metadataObject = { ...this.metadataObject, ...data };
     this.because?.forEach(el => el.setMetadata(data))
 
@@ -37,8 +46,8 @@ export class Excelsion extends Error {
   public toObject() {
     return {
       originException: this.originExceptionName,
-      message: this.message,
-      type: this.type,
+      message: this.generateMessage(),
+      type: ExcelsionType[this.type as ExcelsionKeys],
       reasons: this.format(this.because),
       metadata: this.metadataObject,
     };
@@ -50,18 +59,3 @@ export class Excelsion extends Error {
 
 }
 
-export enum ExcelsionType {
-  DEFAULT = 'default-error',
-  NOT_FOUND = 'not-found',
-  BAD_PARAMETERS = 'bad-parameters',
-  BAD_FORMAT = 'bad-format',
-  UNKNOWN = 'unknown'
-}
-
-export enum ExcelsionMessage {
-  DEFAULT = 'Default Excelsion error',
-  NOT_FOUND = 'Not Found',
-  BAD_PARAMETERS = 'Bad Parameters',
-  BAD_FORMAT = 'Bad Format',
-  UNKNOWN = 'Unknown'
-}

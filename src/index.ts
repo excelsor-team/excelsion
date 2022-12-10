@@ -1,1 +1,3 @@
-export { Excelsion } from './excelsion';
+
+export { Excelsion } from "./lib/excelsion";
+export { ExcelsionTypes } from "./lib/types"
