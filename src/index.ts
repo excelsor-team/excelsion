@@ -1,4 +1,4 @@
-import { EmailHasNoDomainException, InvalidEmailException, UserNotFoundException, EmailHasNoAtException} from "./exceptions/UserNotFound";
+import { EmailHasNoDomainException, InvalidEmailException, UserNotFoundException, EmailHasNoAtException, FormException, NameException, InvalidFieldException } from "./exceptions/UserNotFound";
 
 // throw new UserNotFound(
 //     new UserNotFound(),
@@ -6,14 +6,9 @@ import { EmailHasNoDomainException, InvalidEmailException, UserNotFoundException
 // ).toString()
 
 try {
-    throw new UserNotFoundException(
-        new InvalidEmailException(),
-        new EmailHasNoDomainException(
-            new EmailHasNoAtException()
-        ),
-    );
+    throw new InvalidFieldException(
+    )
 } catch (err: any) {
-    console.log(err.toString());
-    // console.log(err.toObject());
+    console.log(err.toObject());
 }
 
