@@ -1,47 +1,37 @@
 export class Excelsion extends Error {
-  originExceptionName: any;
-  type: ExcelsionType
-  because: Excelsion[]
+  protected originExceptionName: any;
+  protected type: ExcelsionType | string = ExcelsionType.DEFAULT;
+  protected because: Excelsion[];
+  protected metadataObject: object;
 
-  constructor(...args: Excelsion[] | Array<any>) {
+  constructor(...args: Excelsion[]) {
 
-    if (!args.length || args.every(el => el instanceof Excelsion)) {
-      super(ExcelsionType.DEFAULT);
+    super(ExcelsionType.DEFAULT);
 
-      this.type = ExcelsionType.DEFAULT;
-      this.originExceptionName = this.constructor.name;
-      this.message = ExcelsionType.DEFAULT;
-      this.because = args
-    } else {
-      const [type, message, excelsiors] = args;
-      super(message);
-
-      this.type = type ?? ExcelsionType.DEFAULT;
-      this.originExceptionName = this.constructor.name;
-      this.message = message ?? ExcelsionType.DEFAULT;
-      this.because = excelsiors ?? []
-    }
+    this.originExceptionName = this.constructor.name;
+    this.because = args;
+    this.metadataObject = {};
 
   }
 
-  private format(): any {
-    if (this.because.length) {
-      return this.because.map(el => el.toObject());
-    } else {
+  private format(because: Excelsion[]): Array<object> {
+    if (!because?.length)
       return [];
-    }
+
+    return because.map(el => el.toObject());
+
   }
 
-  private stringifyBecause(): any {
-    let string: string = `${this.originExceptionName}`;
-
-    string += this.because.map((item => ` because ${item.stringifyBecause()}`)).join('');
-
-    return string;
+  private setMetadata(metadata: Object) {
+    this.metadataObject = { ...metadata, ...this.metadataObject };
   }
 
-  public metadata(data: object): void {
+  public metadata(data: object) {
 
+    this.metadataObject = { ...this.metadataObject, ...data };
+    this.because?.forEach(el => el.setMetadata(data))
+
+    return this;
   }
 
   public toObject() {
@@ -49,8 +39,8 @@ export class Excelsion extends Error {
       originException: this.originExceptionName,
       message: this.message,
       type: this.type,
-      reasons: this.format(),
-      semanticReasons : this.stringifyBecause(),
+      reasons: this.format(this.because),
+      metadata: this.metadataObject,
     };
   }
 
@@ -63,4 +53,7 @@ export class Excelsion extends Error {
 export enum ExcelsionType {
   DEFAULT = 'Default Excelsion error',
   NOT_FOUND = 'Not Found',
+  BAD_PARAMETERS = 'Bad Parameters',
+  BAD_FORMAT = 'Bad Format',
+  UNKNOWN = 'Unknown'
 }
