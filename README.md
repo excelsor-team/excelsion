@@ -83,29 +83,104 @@ The result of the above code, gives you a structured object:
   }
 ```
 
-> **_NOTE_** - Metadata is passed in all nested exceptions and joined with the specific metadata of each exception.
+> **_NOTE_** - Metadata is passed to immediate nested exceptions and joined with the specific metadata of each exception.
 
 ---
+<br />
 
-## Examples
+## Complex example
 
-### Implementation
+<br />
 
-```
+```typescript
+import { Excelsion, ExcelsionType } from "@excelsor/excelsion";
 
+// Exceptions extending Excelsion
+class UserCreationException extends Excelsion {
+  type = ExcelsionTypes.BAD_PARAMETERS;
+  message = 'User has invalid fields';
+}
+class EmailException extends Excelsion { }
+class EmailBadFormatException extends Excelsion {
+  type = ExcelsionType.BAD_FORMAT;
+};
+class PasswordException extends Excelsion { };
+class PasswordLengthException extends Excelsion { };
+class PasswordMismatchException extends Excelsion {
+  type = 'mismatch';
+};
+
+throw new UserCreationException(
+  new EmailException(
+    new EmailBadFormatException().metadata({})
+  ).metadata({}),
+  new PasswordException(
+    new PasswordLengthException().metadata({ length: 4 }),
+    new PasswordMismatchException().metadata({})
+  ).metadata({ password: '1234' })
+).metadata({ email: 'john.doe@mail.invalid.com' })
+.toObject();
 ```
 
 ### Result
 
 ```
-
+{
+  "originException": "UserCreationException",
+  "message": "User has invalid fields",
+  "type": "bad-parameters",
+  "reasons": [
+    {
+      "originException": "EmailException",
+      "message": "Default Exception",
+      "type": "default",
+      "reasons": [
+        {
+          "originException": "EmailBadFormatException",
+          "message": "Default Exception",
+          "type": "bad-format",
+          "reasons": [],
+          "metadata": {}
+        }
+      ],
+      "metadata": { "email": "john.doe@mail.invalid.com" }
+    },
+    {
+      "originException": "PasswordException",
+      "message": "Default Exception",
+      "type": "default",
+      "reasons": [
+        {
+          "originException": "PasswordLengthException",
+          "message": "Default Exception",
+          "type": "default",
+          "reasons": [],
+          "metadata": { "password": "1234", "length": 4 }
+        },
+        {
+          "originException": "PasswordMismatchException",
+          "message": "Default Exception",
+          "type": "mismatch",
+          "reasons": [],
+          "metadata": { "password": "1234" }
+        }
+      ],
+      "metadata": { "email": "john.doe@mail.invalid.com", "password": "1234" }
+    }
+  ],
+  "metadata": { "email": "john.doe@mail.invalid.com" }
+}
 ```
 
 ## Roadmap
 
-> **_NOTE_** - In the near future, you'll be able to handle the structured object (aka output object) with a handler provided by @excelsor team in a new package.
+- Handling the structured object (aka output object) with a handler provided by @excelsor team in a new package
 
-> **_NOTE_** - In the near future, you'll be able to use the package passing normal new Error() exceptions.
+- Enable passing normal new Error() exceptions
+
+- Provide a real usage example based on dynamically filled exception arrays
+
+- Replacing keys in message with metadata matching values
 
 <br /> <br />
 
